@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #ymd {
+            display: flex;
+            border: 1px solid #259FC8;
+            width: 100px;
+            height: 60px;
+        }
+
+        #ymd>span {
+            /* width: 60px; */
+            background-color: #259FC8;
+            font-size: 3em;
+            color: #fff;
+        }
+
+        #ymd>div {
+            /* font-size: 11em; */
+            line-height: 30px;
+            text-align: center;
+        }
+
+        #ymd>div span:nth-child(1) {
+            color: #739EC8;
+        }
+
+        #ymd>div span:nth-child(2) {
+            color: #989898;
+        }
+
+        #c2>div:nth-child(1) {
+            text-align: right;
+
+        }
+
+        .c2-2 {
+            display: flex;
+            margin: 15px 3px;
+        }
+
+        .c {
+            display: flex;
+            justify-content: center;
+            /* width: 80%; */
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .c>div {
+            border: 1px solid red;
+            /* flex: 1; */
+            width: 450px;
+
+        }
+
+        #c3>div {
+            display: flex;
+            
+        }
+        #c3>div>span{
+            margin: 0 3px;
+        }
+
+        #c3>div>span:nth-child(1) {
+            font-size: 2em;
+        }
+
+        #c3>div>span:nth-child(2),
+        #c3>div>span:nth-child(3) {
+            background-color: #259FC8;
+            height: 1.3em;
+            margin-top: 5px;
+        }
+
+        #c3>div>span:nth-child(4) {
+            color: #989898;
+            /* border: 1px solid rebeccapurple; */
+            flex: 1;
+            text-align: right;
+            font-size: 0.8em;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="c">
+        <div id="c1"></div>
+        <div id="c2">
+            <div>更多></div>
+            <div class="c2-2">
+                <div id="ymd">
+                    <span>24</span>
+                    <div><span>5月</span><span>2023</span></div>
+                </div>
+                <div>文章标题文章标题文章标题文章标题文章标题文章标题文章标题</div>
+            </div>
+            <div class="c2-2">
+                <div id="ymd">
+                    <span>24</span>
+                    <div><span>5月</span><span>2023</span></div>
+                </div>
+                <div>文章标题文章标题文章标题文章标题文章标题文章标题文章标题</div>
+            </div>
+        </div>
+        <div id="c3">
+            <div>
+                <span>通知公告</span>
+                <span>招标</span>
+                <span>招聘</span>
+                <span>更多></span>
+            </div>
+            <div></div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
