@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全屏滚动页面</title>
+    <style>
+        .carousel-item {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .carousel-title {
+            position: absolute;
+            bottom: 30px;
+            left: 50px;
+            width: 70%;
+            /* background-color: rgba(0, 0, 0, 0.5); */
+            color: rgb(252, 251, 251);
+            text-align: left;
+            padding: 10px;
+            box-sizing: border-box;
+            display: none;
+            z-index: 13;
+            font-size: 33px;
+            font-weight:500;
+        }
+        .carousel-item.active .carousel-title {
+            display: block;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .section {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            color: white;
+            transition: all 0.5s ease;
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .section.hide {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        .section.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        #section1 {
+            background-color: transparent;
+        }
+
+        #section2 {
+            background-color: #33FF57;
+        }
+
+        #section3 {
+            background-color: #3357FF;
+        }
+
+        #section4 {
+            background-color: #F333FF;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(211, 211, 211, 0.2) 80%, rgba(75, 74, 74, 0.5) 100%);
+            z-index: 9;
+
+        }
+
+        .carousel-slide {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            transition: transform 1.5s ease;
+        }
+        
+        .carousel-title {
+            transition: none !important;
+        }
+
+        .carousel-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 10;
+        }
+
+        .prev {
+            left: 20px;
+        }
+
+        .next {
+            right: 20px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 60px;
+            right: 60px;
+            display: flex;
+            gap: 10px;
+            z-index: 11;
+        }
+
+        .more-link-out {
+            margin: -5px 10px;
+            font-size: 0;
+        }
+
+        .more-link-out a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .more-link {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            /* margin-left: 10px; */
+        }
+
+        .more-link::before {
+            content: "";
+            position: absolute;
+            width: 2px;
+            height: 1.96rem;
+            background: #fff;
+            opacity: .44;
+            left: 80%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .indicator-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0 10px;
+        }
+
+        .indicator {
+            min-width: 18px;
+            height: 18px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            padding: 0 2px;
+            position: relative;
+        }
+
+        .indicator img {
+            transform: scale(1.2);
+        }
+
+        .indicator.active {
+            color: white;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .indicator.active::after {
+            border-top: 2px solid white;
+            content: "";
+            transition: width 0.5s ease;
+        }
+
+        .indicator:not(.active)::after {
+            border-top: 2px solid white;
+            content: "";
+            transition: width 0.5s ease;
+        }
+
+        .indicator.active.show::after {
+            width: 1em;
+        }
+
+        @keyframes expand {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 1em;
+            }
+        }
+
+        @keyframes collapse {
+            from {
+                width: 1em;
+            }
+
+            to {
+                width: 0;
+            }
+
+        }
+
+        .indicator.active::after {
+            animation: expand 0.5s ease forwards;
+            overflow: hidden;
+        }
+
+        .indicator:not(.active)::after {
+            animation: collapse 0.5s ease forwards;
+            overflow: hidden;
+        }
+
+        .indicator.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 18px;
+            height: 18px;
+            background-color: #f4a44e;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">东北师范大学</div>
+    <div class="section" id="section1">
+        <div class="carousel-container">
+            <div class="carousel-gradient-overlay"></div>
+            <div class="carousel-slide">
+                <div class="carousel-item">
+                    <img src="./img/1.jpg" alt="轮播图1" class="carousel-img">
+                </div>
+                <div class="carousel-item">
+                    <img src="./img/2.jpg" alt="轮播图2" class="carousel-img">
+                </div>
+                <div class="carousel-item">
+                    <img src="./img/3.jpg" alt="轮播图3" class="carousel-img">
+                </div>
+                <div class="carousel-item">
+                    <img src="./img/4.jpg" alt="轮播图4" class="carousel-img">
+                </div>
+            </div>
+            <div class="carousel-title-container">
+                <div class="carousel-title" data-slide="0">轮播图1标题轮播图1标题轮播图1标题轮播图1标题轮播图1标题轮播图1标题轮播图1标题</div>
+                <div class="carousel-title" data-slide="1">轮播图2标题</div>
+                <div class="carousel-title" data-slide="2">轮播图3标题</div>
+                <div class="carousel-title" data-slide="3">轮播图4标题</div>
+            </div>
+            <button class="carousel-btn prev">❮</button>
+            <button class="carousel-btn next">❯</button>
+            <div class="carousel-indicators">
+
+                <div class="indicator-container indicator active">
+                    <img src="./img/banner_i1.png" data-slide-to="0">
+                </div>
+                <div class="indicator-container indicator">
+                    <img src="./img/banner_i2_on.png" data-slide-to="1">
+                </div>
+                <div class="indicator-container indicator">
+                    <img src="./img/banner_i3_on.png" data-slide-to="2">
+                </div>
+                <div class="indicator-container indicator">
+                    <img src="./img/banner_i4_on.png" data-slide-to="3">
+                </div>
+                <div class="more-link-out"><a href="#" class="more-link">更多>></a></div>
+            </div>
+        </div>
+    </div>
+    <div class="section" id="section2">第二部分</div>
+    <div class="section" id="section3">第三部分</div>
+    <div class="section" id="section4">第四部分</div>
+
+    <script>
+        const carouselSlide = document.querySelector('.carousel-slide');
+        const carouselItems = document.querySelectorAll('.carousel-item');
+        const prevBtn = document.querySelector('.prev');
+        const nextBtn = document.querySelector('.next');
+        const indicators = document.querySelectorAll('.indicator');
+        const titles = document.querySelectorAll('.carousel-title');
+        
+        let currentSlide = 0;
+        const slideWidth = carouselItems[0].clientWidth;
+        
+        function goToSlide(slideIndex) {
+            carouselSlide.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+            currentSlide = slideIndex;
+            updateIndicators();
+            updateTitles();
+        }
+        
+        function updateIndicators() {
+            indicators.forEach((indicator, index) => {
+                if (index === currentSlide) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+        
+        function updateTitles() {
+            titles.forEach(title => {
+                title.style.display = 'none';
+            });
+            document.querySelector(`.carousel-title[data-slide="${currentSlide}"]`).style.display = 'block';
+        }
+        
+        prevBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide > 0) ? currentSlide - 1 : carouselItems.length - 1;
+            goToSlide(currentSlide);
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide < carouselItems.length - 1) ? currentSlide + 1 : 0;
+            goToSlide(currentSlide);
+        });
+        
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                goToSlide(index);
+            });
+        });
+        
+        // 初始化标题显示
+        updateTitles();
+        
+        // 当前显示的页面索引，初始为0表示第一个页面
+        let currentSection = 0;
+        // 获取所有.section元素
+        const sections = document.querySelectorAll('.section');
+
+        // 监听鼠标滚轮事件
+        window.addEventListener('wheel', (e) => {
+            // 阻止默认滚动行为
+            e.preventDefault();
+
+            // 判断滚轮方向：向下滚动且不是最后一个页面
+            if (e.deltaY > 0 && currentSection < sections.length - 1) {
+                currentSection++; // 切换到下一个页面
+            }
+            // 向上滚动且不是第一个页面
+            else if (e.deltaY < 0 && currentSection > 0) {
+                currentSection--; // 切换到上一个页面
+            }
+
+            // 添加动画效果
+            sections.forEach((section, index) => {
+                if (index === currentSection) {
+                    section.classList.remove('hide');
+                    section.classList.add('show');
+                } else {
+                    section.classList.remove('show');
+                    section.classList.add('hide');
+                }
+            });
+
+            // 平滑滚动到目标页面
+            window.scrollTo({
+                top: sections[currentSection].offsetTop, // 目标页面的顶部位置
+                behavior: 'smooth' // 平滑滚动效果
+            });
+        });
+    </script>
+</body>
+
+</html>

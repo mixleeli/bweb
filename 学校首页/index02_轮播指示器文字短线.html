@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全屏滚动页面</title>
+    <style>
+        /* 重置body的外边距和内边距，并隐藏溢出内容 */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* 定义每个section的样式，使其占满屏幕宽度，高度为视口高度的一半，并居中显示文本 */
+        .section {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            color: white;
+            /* 添加过渡效果，使缩放和透明度变化更平滑 */
+            transition: all 1.5s ease;
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* 定义隐藏状态下的section样式，缩小并降低透明度 */
+        .section.hide {
+            transform: scale(0.5);
+            opacity: 0;
+        }
+
+        /* 定义显示状态下的section样式，正常缩放并完全不透明 */
+        .section.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* 定义每个section的背景颜色 */
+        #section1 {
+            background-color: #FF5733;
+        }
+
+        #section2 {
+            background-color: #33FF57;
+        }
+
+        #section3 {
+            background-color: #3357FF;
+        }
+
+        #section4 {
+            background-color: #F333FF;
+        }
+
+        /* 轮播图样式 */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slider {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+
+        .slide {
+            width: 25%;
+            height: 100%;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 10;
+            pointer-events: all;
+            /* 确保按钮可点击 */
+        }
+
+        .prev {
+            left: 20px;
+        }
+
+        .next {
+            right: 20px;
+        }
+
+        .slider-nav {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .nav-item {
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+        .nav-item.active{
+            color: red;
+            font-weight: 900;
+        }
+
+        .nav-item.active::after {
+            content: "——";
+        }
+    </style>
+</head>
+
+<body>
+    <div class="section" id="section1">
+        <div class="slider-container">
+            <div class="slider">
+                <div class="slide" id="slide1"><img src="img/1.jpg" alt=""></div>
+                <div class="slide" id="slide2"><img src="img/2.jpg" alt=""></div>
+                <div class="slide" id="slide3"><img src="img/3.jpg" alt=""></div>
+                <div class="slide" id="slide4"><img src="img/4.jpg" alt=""></div>
+            </div>
+            <button class="slider-btn prev">❮</button>
+            <button class="slider-btn next">❯</button>
+            <div class="slider-nav">
+                <span class="nav-item" data-index="0">为</span>
+                <span class="nav-item" data-index="1">人</span>
+                <span class="nav-item" data-index="2">师</span>
+                <span class="nav-item" data-index="3">表</span>
+            </div>
+        </div>
+    </div>
+    <div class="section" id="section2">第二部分</div>
+    <div class="section" id="section3">第三部分</div>
+    <div class="section" id="section4">第四部分</div>
+    <script>
+        // 鼠标滚轮事件
+        // 当前显示的页面索引，初始为0表示第一个页面
+        let currentSection = 0;
+        // 获取所有.section元素
+        const sections = document.querySelectorAll('.section');
+
+        // 监听鼠标滚轮事件
+        window.addEventListener('wheel', (e) => {
+            // 阻止默认滚动行为
+            e.preventDefault();
+
+            // 判断滚轮方向：向下滚动且不是最后一个页面
+            if (e.deltaY > 0 && currentSection < sections.length - 1) {
+                currentSection++; // 切换到下一个页面
+            }
+            // 向上滚动且不是第一个页面
+            else if (e.deltaY < 0 && currentSection > 0) {
+                currentSection--; // 切换到上一个页面
+            }
+
+            // 平滑滚动到目标页面
+            window.scrollTo({
+                top: sections[currentSection].offsetTop,
+                behavior: 'smooth'
+            });
+
+        });
+
+
+        // 轮播图控制逻辑
+
+        // 页面加载时显示第一张图片并激活“为”字
+        window.addEventListener('load', () => {
+            goToSlide(0);
+        });
+        const slider = document.querySelector('.slider');
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.querySelector('.prev');
+        const nextBtn = document.querySelector('.next');
+        const navItems = document.querySelectorAll('.nav-item');
+        let currentSlide = 0;
+
+        function goToSlide(index) {
+            currentSlide = index;
+            slider.style.transform = `translateX(-${currentSlide * 25}%)`;
+
+            // 更新导航文字状态
+            navItems.forEach((item, i) => {
+                item.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        prevBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            goToSlide(currentSlide);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            goToSlide(currentSlide);
+        });
+
+        navItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                goToSlide(index);
+            });
+        });
+    </script>
+</body>
+
+</html>

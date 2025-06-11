@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全屏滚动页面</title>
+    <style>
+        /* 重置body的外边距和内边距，并隐藏溢出内容 */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        /* 定义每个section的样式，使其占满屏幕宽度，高度为视口高度的一半，并居中显示文本 */
+        .section {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            color: white;
+            /* 添加过渡效果，使缩放和透明度变化更平滑 */
+            transition: all 1.5s ease;
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        /* 定义隐藏状态下的section样式，缩小并降低透明度 */
+        .section.hide {
+            transform: scale(0.5);
+            opacity: 0;
+        }
+        
+        /* 定义显示状态下的section样式，正常缩放并完全不透明 */
+        .section.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+        /* 定义每个section的背景颜色 */
+        #section1 { background-color: #FF5733; }
+        #section2 { background-color: #33FF57; }
+        #section3 { background-color: #3357FF; }
+        #section4 { background-color: #F333FF; }
+    </style>
+</head>
+<body>
+    <div class="section" id="section1">第一部分</div>
+    <div class="section" id="section2">第二部分</div>
+    <div class="section" id="section3">第三部分</div>
+    <div class="section" id="section4">第四部分</div>
+
+    <script>
+        // 当前显示的页面索引，初始为0表示第一个页面
+        let currentSection = 0;
+        // 获取所有.section元素
+        const sections = document.querySelectorAll('.section');
+        
+        // 监听鼠标滚轮事件
+        window.addEventListener('wheel', (e) => {
+            // 阻止默认滚动行为
+            e.preventDefault();
+            
+            // 判断滚轮方向：向下滚动且不是最后一个页面
+            if (e.deltaY > 0 && currentSection < sections.length - 1) {
+                currentSection++; // 切换到下一个页面
+            } 
+            // 向上滚动且不是第一个页面
+            else if (e.deltaY < 0 && currentSection > 0) {
+                currentSection--; // 切换到上一个页面
+            }
+            
+            // 添加动画效果
+            sections.forEach((section, index) => {
+                if(index === currentSection) {
+                    section.classList.remove('hide');
+                    section.classList.add('show');
+                } else {
+                    section.classList.remove('show');
+                    section.classList.add('hide');
+                }
+            });
+            
+            // 平滑滚动到目标页面
+            window.scrollTo({
+                top: sections[currentSection].offsetTop, // 目标页面的顶部位置
+                behavior: 'smooth' // 平滑滚动效果
+            });
+        });
+    </script>
+</body>
+</html>

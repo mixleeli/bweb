@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全屏滚动页面</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+        .section {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            color: white;
+            transition: all 0.5s ease;
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .section.hide {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        
+        .section.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+        #section1 { background-color: transparent; }
+        #section2 { background-color: #33FF57; }
+        #section3 { background-color: #3357FF; }
+        #section4 { background-color: #F333FF; }
+        
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .carousel-slide {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+        
+        .carousel-img {
+            width: 25%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 10;
+        }
+        
+        .prev {
+            left: 20px;
+        }
+        
+        .next {
+            right: 20px;
+        }
+        
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .indicator {
+            min-width: 24px;
+            height: 24px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-size: 16px;
+            white-space: nowrap;
+            padding: 0 2px;
+        }
+        
+        .indicator.active {
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">东北师范大学</div>
+    <div class="section" id="section1">
+        <div class="carousel-container">
+            <div class="carousel-slide">
+                <img src="./img/1.jpg" alt="轮播图1" class="carousel-img">
+                <img src="./img/2.jpg" alt="轮播图2" class="carousel-img">
+                <img src="./img/3.jpg" alt="轮播图3" class="carousel-img">
+                <img src="./img/4.jpg" alt="轮播图4" class="carousel-img">
+            </div>
+            <button class="carousel-btn prev">❮</button>
+            <button class="carousel-btn next">❯</button>
+            <div class="carousel-indicators">
+                <span class="indicator active" data-slide-to="0">为</span>
+                <span class="indicator" data-slide-to="1">人</span>
+                <span class="indicator" data-slide-to="2">师</span>
+                <span class="indicator" data-slide-to="3">表</span>
+            </div>
+        </div>
+    </div>
+    <div class="section" id="section2">第二部分</div>
+    <div class="section" id="section3">第三部分</div>
+    <div class="section" id="section4">第四部分</div>
+
+    <script>
+        // 当前显示的页面索引，初始为0表示第一个页面
+        let currentSection = 0;
+        // 获取所有.section元素
+        const sections = document.querySelectorAll('.section');
+        
+        // 轮播图相关变量
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-img');
+        const indicators = document.querySelectorAll('.indicator');
+        const slideWidth = slides[0].clientWidth;
+        const carouselSlide = document.querySelector('.carousel-slide');
+        
+        // 初始化轮播图和指示器状态
+        carouselSlide.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+        updateIndicators();
+        
+        // 轮播图导航函数
+        function goToSlide(n) {
+            currentSlide = (n + slides.length) % slides.length;
+            carouselSlide.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+            updateIndicators();
+        }
+        
+        // 更新指示器状态
+        function updateIndicators() {
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentSlide);
+                if(index === currentSlide) {
+                    indicator.textContent = (indicator.dataset.slideTo === '0' ? '为——' : 
+                                          indicator.dataset.slideTo === '1' ? '人——' : 
+                                          indicator.dataset.slideTo === '2' ? '师——' : '表——');
+                } else {
+                    indicator.textContent = indicator.dataset.slideTo === '0' ? (currentSlide === 0 ? '为——' : '为') : 
+                                          indicator.dataset.slideTo === '1' ? (currentSlide === 1 ? '人——' : '人') : 
+                                          indicator.dataset.slideTo === '2' ? (currentSlide === 2 ? '师——' : '师') : 
+                                          (currentSlide === 3 ? '表——' : '表');
+                }
+            });
+        }
+        
+        // 按钮点击事件
+        document.querySelector('.prev').addEventListener('click', () => {
+            goToSlide(currentSlide - 1);
+        });
+        
+        document.querySelector('.next').addEventListener('click', () => {
+            goToSlide(currentSlide + 1);
+        });
+        
+        // 指示器点击事件
+        indicators.forEach(indicator => {
+            indicator.addEventListener('click', () => {
+                goToSlide(parseInt(indicator.dataset.slideTo));
+            });
+        });
+        
+        // 监听鼠标滚轮事件
+        window.addEventListener('wheel', (e) => {
+            // 阻止默认滚动行为
+            e.preventDefault();
+            
+            // 判断滚轮方向：向下滚动且不是最后一个页面
+            if (e.deltaY > 0 && currentSection < sections.length - 1) {
+                currentSection++; // 切换到下一个页面
+            } 
+            // 向上滚动且不是第一个页面
+            else if (e.deltaY < 0 && currentSection > 0) {
+                currentSection--; // 切换到上一个页面
+            }
+            
+            // 添加动画效果
+            sections.forEach((section, index) => {
+                if(index === currentSection) {
+                    section.classList.remove('hide');
+                    section.classList.add('show');
+                } else {
+                    section.classList.remove('show');
+                    section.classList.add('hide');
+                }
+            });
+            
+            // 平滑滚动到目标页面
+            window.scrollTo({
+                top: sections[currentSection].offsetTop, // 目标页面的顶部位置
+                behavior: 'smooth' // 平滑滚动效果
+            });
+        });
+    </script>
+</body>
+</html>

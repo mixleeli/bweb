@@ -1,0 +1,20 @@
+{
+  "carouselItems": [
+    {
+      "imageUrl": "./img/1.jpg",
+      "title": "标题"
+    },
+    {
+      "imageUrl": "./img/2.jpg",
+      "title": "轮播图2标题"
+    },
+    {
+      "imageUrl": "./img/3.jpg",
+      "title": "轮播图33333标题"
+    },
+    {
+      "imageUrl": "./img/4.jpg",
+      "title": "轮播图4标题"
+    }
+  ]
+}
